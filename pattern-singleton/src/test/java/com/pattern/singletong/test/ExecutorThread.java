@@ -1,6 +1,7 @@
 package com.pattern.singletong.test;
 
 import com.pattern.singleton.lazy.LazyDoubleCheckSingleton;
+import com.pattern.singleton.lazy.LazyInnerClassSingleton;
 import com.pattern.singleton.lazy.LazySimpleSingleton;
 import com.pattern.singleton.threadlocal.ThreadLocalSingleton;
 
@@ -10,11 +11,12 @@ public class ExecutorThread implements Runnable {
     public void run() {
 //        LazySimpleSingleton singleton = LazySimpleSingleton.getInstance();
 //        LazyDoubleCheckSingleton singleton = LazyDoubleCheckSingleton.getInstance();
-        ThreadLocalSingleton singleton = ThreadLocalSingleton.getInstance();
-        System.out.println(Thread.currentThread().getName() + ":" + singleton);
-
-        System.out.println(Thread.currentThread().getName() + ":" + ThreadLocalSingleton.getInstance());
-        System.out.println(Thread.currentThread().getName() + ":" + ThreadLocalSingleton.getInstance());
-        System.out.println(Thread.currentThread().getName() + ":" + ThreadLocalSingleton.getInstance());
+        LazyInnerClassSingleton singleton = LazyInnerClassSingleton.getInstance();
+//        ThreadLocalSingleton singleton = ThreadLocalSingleton.getInstance();
+//        System.out.println(Thread.currentThread().getName() + ":" + singleton);
+//
+//        System.out.println(Thread.currentThread().getName() + ":" + ThreadLocalSingleton.getInstance());
+//        System.out.println(Thread.currentThread().getName() + ":" + ThreadLocalSingleton.getInstance());
+//        System.out.println(Thread.currentThread().getName() + ":" + ThreadLocalSingleton.getInstance());
     }
 }
