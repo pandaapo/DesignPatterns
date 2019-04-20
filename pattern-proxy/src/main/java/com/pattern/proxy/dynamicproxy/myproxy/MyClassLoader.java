@@ -17,11 +17,11 @@ public class MyClassLoader extends ClassLoader{
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         // 获取类环境
         String className  =  MyClassLoader.class.getPackage().getName() + "." + name;
-        //把类转换成文件
         if(classPathFile != null){
+            //找到class文件
             File classFile = new File(classPathFile, name.replaceAll("\\.","/") + ".class");
             if(classFile.exists()){
-                //再通过字节码读取文件，转换成类对象
+                //把class文件转换成字节码数组
                 FileInputStream in = null;
                 ByteArrayOutputStream out = null;
                 try{
@@ -32,6 +32,7 @@ public class MyClassLoader extends ClassLoader{
                     while ((len = in.read(buff)) != -1) {
                         out.write(buff, 0,len);
                     }
+                    //把字节码数组转换成类对象
                     return  defineClass(className,out.toByteArray(),0,out.size());
                 }catch (Exception e) {
                     e.printStackTrace();

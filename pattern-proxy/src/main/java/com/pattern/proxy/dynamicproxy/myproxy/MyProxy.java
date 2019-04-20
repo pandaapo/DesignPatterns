@@ -27,7 +27,7 @@ public class MyProxy {
             fw.flush();
             fw.close();
 
-            //动态编译
+            //动态编译上面生成的java文件
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             StandardJavaFileManager manager = compiler.getStandardFileManager(null, null, null);
             Iterable iterable =  manager.getJavaFileObjects(f);
@@ -38,6 +38,7 @@ public class MyProxy {
             //将编译后的类加载到内存中
             Class proxyCLass = loader.findClass("$Proxy0");
             System.out.println(proxyCLass);
+            //获取构造方法
             Constructor c = proxyCLass.getConstructor(MyInvocationHandler.class);
             return c.newInstance(h);
         }catch (Exception e){
@@ -62,14 +63,16 @@ public class MyProxy {
         sb.append("this.h = h;" + ln);
         sb.append("}" + ln);
 
+        //生成接口中的方法
         for(Method m: interfaces[0].getMethods()){
+            //先只写无参的方法
             sb.append("public " + m.getReturnType().getName() + " " + m.getName() + "(){" + ln);
                 sb.append("try{" + ln);
-                //通过反射调用
-                sb.append("Method m =" + interfaces[0].getName()+ ".class.getMethod(\"" + m.getName() +"\", new Class[]{});" + ln);
-                sb.append("this.h.invoke(this,m,null);" + ln);
+                    //通过反射调用
+                    sb.append("Method m =" + interfaces[0].getName()+ ".class.getMethod(\"" + m.getName() +"\", new Class[]{});" + ln);
+                    sb.append("this.h.invoke(this,m,null);" + ln);
                 sb.append("}catch(Throwable e){"+ ln);
-                sb.append("e.printStackTrace();" + ln);
+                    sb.append("e.printStackTrace();" + ln);
                 sb.append("}" + ln);
             sb.append("}");
         }
