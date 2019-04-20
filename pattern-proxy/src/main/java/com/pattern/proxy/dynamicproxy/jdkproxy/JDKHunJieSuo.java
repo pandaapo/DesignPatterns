@@ -14,6 +14,7 @@ import java.lang.reflect.Proxy;
 //InvokeHandler，功能增强，但不影响目标对象的原始需求
 public class JDKHunJieSuo implements InvocationHandler {
 
+    //这个Object就是被代理的对象。由于JDK的动态代理实现机制，被代理的对象必须实现一个接口。
     private Object target;
 
     //提供注入的方法？？？
