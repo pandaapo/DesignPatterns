@@ -14,10 +14,10 @@ import java.lang.reflect.Proxy;
 //InvokeHandler，功能增强，但不影响目标对象的原始需求
 public class JDKHunJieSuo implements InvocationHandler {
 
-    private Person target;
+    private Object target;
 
     //提供注入的方法？？？
-    public Object getInstance(Person person) throws Exception{
+    public Object getInstance(Object person) throws Exception{
         this.target = person;
         Class<?> clazz = target.getClass();
         //jdk的一种写法
