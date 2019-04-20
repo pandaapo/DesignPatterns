@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 //主要功能：生成代码(——》自己编译、自己加载)
 public class MyProxy {
@@ -35,11 +37,12 @@ public class MyProxy {
             JavaCompiler.CompilationTask task = compiler.getTask(null,manager,null,null, null, iterable);
             task.call();
             manager.close();
-            //将编译后的类加载到内存中
+            //将编译后的类加载到JVM内存中
             Class proxyCLass = loader.findClass("$Proxy0");
-            System.out.println(proxyCLass);
+            f.delete();
             //获取构造方法
             Constructor c = proxyCLass.getConstructor(MyInvocationHandler.class);
+            //返回字节码重组以后的新的代理对象
             return c.newInstance(h);
         }catch (Exception e){
             e.printStackTrace();
@@ -65,20 +68,75 @@ public class MyProxy {
 
         //生成接口中的方法
         for(Method m: interfaces[0].getMethods()){
+            //动态获取方法的参数、类型、形参、返回值
+            Class<?>[] params = m.getParameterTypes();
+
+            StringBuffer paramNames = new StringBuffer();
+            StringBuffer paramValues = new StringBuffer();
+            StringBuffer paramClasses = new StringBuffer();
+
+            for(int i = 0; i < params.length; i++){
+                Class clazz = params[i];
+                String type = clazz.getName();
+                String paramName = toLowerFirstCase(clazz.getSimpleName());
+                paramNames.append(type + " " + paramName);
+                paramValues.append(paramName);
+                paramClasses.append(clazz.getName() + ".class");
+                if(i > 0 && i < params.length - 1){
+                    paramNames.append(",");
+                    paramClasses.append(",");
+                    paramValues.append(",");
+                }
+            }
+
             //先只写无参的方法
-            sb.append("public " + m.getReturnType().getName() + " " + m.getName() + "(){" + ln);
+            sb.append("public " + m.getReturnType().getName() + " " + m.getName() + "(" +paramNames.toString()+ "){" + ln);
                 sb.append("try{" + ln);
                     //通过反射调用
-                    sb.append("Method m =" + interfaces[0].getName()+ ".class.getMethod(\"" + m.getName() +"\", new Class[]{});" + ln);
-                    sb.append("this.h.invoke(this,m,null);" + ln);
+                    sb.append("Method m =" + interfaces[0].getName()+ ".class.getMethod(\"" + m.getName() +"\", new Class[]{" + paramClasses.toString() + "});" + ln);
+                    sb.append((hasReturnValue(m.getReturnType()) ? "return " : "") + getCaseCode("this.h.invoke(this, m, new Object[]{" +paramValues.toString()+ "})", m.getReturnType()) + ";");
+                sb.append("}catch(Error e){"+ ln);
                 sb.append("}catch(Throwable e){"+ ln);
-                    sb.append("e.printStackTrace();" + ln);
+                    sb.append("throw new UndeclaredThrowableException(e);" + ln);
                 sb.append("}" + ln);
+                sb.append(getReturnEmptyCode(m.getReturnType()));
             sb.append("}");
         }
 
         sb.append("}");
         return sb.toString();
+    }
+
+    private static String getReturnEmptyCode(Class<?> returnClazz) {
+        if(mappings.containsKey(returnClazz)){
+            return "return 0;";
+        } else if (returnClazz == void.class) {
+            return "";
+        } else {
+            return "return null;";
+        }
+    }
+
+    private static Map<Class, Class> mappings = new HashMap<Class, Class>();
+    static {
+        mappings.put(int.class,Integer.class);
+    }
+
+    private static String getCaseCode(String s, Class<?> clazz) {
+        if(mappings.containsKey(clazz)){
+            return "((" +mappings.get(clazz).getName()+ ")" +s+ ")." + clazz.getSimpleName() + "Value()";
+        }
+        return s;
+    }
+
+    private static boolean hasReturnValue(Class<?> clazz) {
+        return clazz != void.class;
+    }
+
+    private static String toLowerFirstCase(String src) {
+        char[] chars = src.toCharArray();
+        chars[0] += 32;
+        return String.valueOf(chars);
     }
 
 }
