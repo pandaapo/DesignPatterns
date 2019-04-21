@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 
-//代理数据源切换逻辑
+//静态代理数据源切换逻辑
 public class OrderServiceStaticProxy implements IOrderService {
     private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
 
