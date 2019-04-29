@@ -11,6 +11,9 @@ public abstract class BatterCakeDecorator extends BatterCake {
         this.batterCake = batterCake;
     }
 
+    //一点扩展
+    protected  abstract void doSomething();
+
     @Override
     protected String getMsg() {
         return batterCake.getMsg();

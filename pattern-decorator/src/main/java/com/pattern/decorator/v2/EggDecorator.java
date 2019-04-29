@@ -6,6 +6,11 @@ public class EggDecorator extends BatterCakeDecorator {
     }
 
     @Override
+    protected void doSomething() {
+
+    }
+
+    @Override
     protected String getMsg() {
         return super.getMsg() + "+ 1个鸡蛋";
     }
