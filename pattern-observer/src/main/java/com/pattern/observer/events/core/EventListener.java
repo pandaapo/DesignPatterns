@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class EventListener {
 
-    //JDK底层的Listener也类似：用这个map保存所有的事件
+    //JDK底层的Listener也类似：用这个map保存所有的事件，即保存被观察者
     protected Map<String,Event> events = new HashMap<>();
 
     //根据事件名称和目标对象添加监听
