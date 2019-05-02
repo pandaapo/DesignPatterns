@@ -19,7 +19,7 @@ public class Teacher implements Observer {
         Question question = (Question)arg;
         System.out.println("+++++++++++++++++++++++");
         System.out.println(name + "老师，\n" +
-                "您收到一个来自" +gper+ "社区的一个问题，\n" +
+                "您收到一个来自" +gper.getName()+ "社区的一个问题：\n" +
                 question.getContent() + "\n" +
                 "提问者：" + question.getUserName());
 
